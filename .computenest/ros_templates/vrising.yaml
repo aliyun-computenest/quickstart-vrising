@@ -1,0 +1,295 @@
+ROSTemplateFormatVersion: '2015-09-01'
+Description:
+  en: Deploy VRising game service
+  zh-cn: 部署夜族崛起游戏服务
+Parameters:
+  PayType:
+    Type: String
+    Label:
+      en: ECS Instance Charge Type
+      zh-cn: 付费类型
+    AssociationProperty: ChargeType
+    AssociationPropertyMetadata:
+      LocaleKey: InstanceChargeType
+    Default: PrePaid
+    AllowedValues:
+      - PostPaid
+      - PrePaid
+  PayPeriodUnit:
+    Type: String
+    Label:
+      en: Pay Period Unit
+      zh-cn: 购买资源时长周期
+    AssociationProperty: PayPeriodUnit
+    AssociationPropertyMetadata:
+      ValueLabelMapping:
+        Month: 月
+        Year: 年
+      Visible:
+        Condition:
+          Fn::Not:
+            Fn::Equals:
+              - ${PayType}
+              - PostPaid
+    Default: Month
+    AllowedValues:
+      - Month
+  PayPeriod:
+    Type: Number
+    Label:
+      en: Period
+      zh-cn: 购买资源时长
+    AssociationProperty: PayPeriod
+    AssociationPropertyMetadata:
+      Visible:
+        Condition:
+          Fn::Not:
+            Fn::Equals:
+              - ${PayType}
+              - PostPaid
+    Default: 1
+    AllowedValues:
+      - 1
+      - 3
+      - 6
+  EcsInstanceType:
+    Type: String
+    Label:
+      en: Instance Type
+      zh-cn: 实例类型
+    AssociationProperty: ALIYUN::ECS::Instance::InstanceType
+    AssociationPropertyMetadata:
+      ZoneId: ${ZoneId}
+      InstanceChargeType: ${PayType}
+  SystemDiskCategory:
+    Type: String
+    AllowedValues:
+      - cloud_efficiency
+      - cloud_essd
+      - cloud_essd_entry
+    Label:
+      en: System Disk Category
+      zh-cn: 系统盘类型
+    AssociationPropertyMetadata:
+      LocaleKey: DiskCategory
+  SystemDiskSize:
+    Type: Number
+    Label:
+      zh-cn: 系统盘空间 (GB)
+      en: System Disk Space (GB)
+    MinValue: 40
+    MaxValue: 2000
+  InternetChargeType:
+    Type: String
+    Label:
+      zh-cn: 带宽付费类型
+      en: Internet Charge Type
+    AssociationPropertyMetadata:
+      ValueLabelMapping:
+        PayByTraffic: 按流量计费
+        PayByBandwidth: 按固定带宽计费
+    AllowedValues:
+      - PayByBandwidth
+      - PayByTraffic
+  InternetMaxBandwidthOut:
+    Type: Number
+    Label:
+      zh-cn: 公网带宽 (Mbps)
+      en: Internet Max Bandwidth Out (Mbps)
+    MinValue: 1
+    MaxValue: 100
+  InstancePassword:
+    Type: String
+    Label:
+      en: Instance Password
+      zh-cn: 实例密码
+    Description:
+      en: Server login password, Length 8-30, must contain three(Capital letters,
+        lowercase letters, numbers, ()`~!@#$%^&*_-+=|{}[]:;'<>,.?/ Special symbol
+        in)
+      zh-cn: 服务器登录密码,长度8-30，必须包含三项（大写字母、小写字母、数字、 ()`~!@#$%^&*_-+=|{}[]:;'<>,.?/ 中的特殊符号）
+    AssociationProperty: ALIYUN::ECS::Instance::Password
+    AssociationPropertyMetadata:
+      OSType: linux
+    NoEcho: true
+  ZoneId:
+    Type: String
+    Label:
+      en: Availability Zone
+      zh-cn: 可用区
+    AssociationProperty: ALIYUN::ECS::Instance::ZoneId
+    AssociationPropertyMetadata:
+      DefaultValueStrategy: diamond
+      InstanceType: ${EcsInstanceType}
+      SystemDiskCategory: ${SystemDiskCategory}
+      InstanceChargeType: ${PayType}
+  # 游戏配置
+  ServerName:
+    Type: String
+    Label:
+      en: Server Name
+      zh-cn: 服务器名称
+    Description:
+      en: ServerName
+      zh-cn: ServerName
+    Default: "My VRising Server"
+    AllowedPattern: '^[A-Za-z0-9\ ]*$'
+    ConstraintDescription:
+      zh-cn: '只允许大写字母、小写字母、数字和空格，不允许包含特殊符号'
+      en: >-
+        Only uppercase letters, lowercase letters, numbers, and Spaces are allowed, and special symbols are not allowed
+Resources:
+  EcsVpc:
+    Type: ALIYUN::ECS::VPC
+    Properties:
+      CidrBlock: 192.168.0.0/16
+      VpcName:
+        Ref: ALIYUN::StackName
+  EcsVSwitch:
+    Type: ALIYUN::ECS::VSwitch
+    Properties:
+      ZoneId:
+        Ref: ZoneId
+      VpcId:
+        Ref: EcsVpc
+      CidrBlock: 192.168.1.0/24
+  EcsSecurityGroup:
+    Type: ALIYUN::ECS::SecurityGroup
+    Properties:
+      VpcId:
+        Ref: EcsVpc
+      SecurityGroupIngress:
+        - PortRange: 9876/9876
+          Priority: 1
+          SourceCidrIp: 0.0.0.0/0
+          IpProtocol: udp
+        - PortRange: 22/22
+          Priority: 1
+          SourceCidrIp: 0.0.0.0/0
+          IpProtocol: tcp
+  WindowsEcsInstanceGroup:
+    Type: ALIYUN::ECS::InstanceGroup
+    Properties:
+      WillReplace: false
+      ZoneId:
+        Ref: ZoneId
+      VpcId:
+        Ref: EcsVpc
+      VSwitchId:
+        Ref: EcsVSwitch
+      SecurityGroupId:
+        Ref: EcsSecurityGroup
+      ImageId: m-2zednt7gbkyqd1u3p4my
+      IoOptimized: optimized
+      InstanceChargeType:
+        Ref: PayType
+      PeriodUnit:
+        Ref: PayPeriodUnit
+      Period:
+        Ref: PayPeriod
+      SystemDiskCategory:
+        Ref: SystemDiskCategory
+      SystemDiskSize:
+        Ref: SystemDiskSize
+      MaxAmount: 1
+      InstanceType:
+        Ref: EcsInstanceType
+      Password:
+        Ref: InstancePassword
+      InternetMaxBandwidthOut:
+        Ref: InternetMaxBandwidthOut
+      InternetChargeType:
+        Ref: InternetChargeType
+      InstanceName:
+        Fn::Join:
+          - '-'
+          - - Ref: ALIYUN::StackName
+            - '[1,4]'
+      UserData: |
+        [powershell]
+  InstanceRunCommandForWindows:
+    Type: ALIYUN::ECS::RunCommand
+    DependsOn:
+      - WindowsEcsInstanceGroup
+    Properties:
+      Type: RunPowerShellScript
+      Sync: true
+      InstanceIds:
+        Fn::GetAtt:
+          - WindowsEcsInstanceGroup
+          - InstanceIds
+      Timeout: 1800
+      CommandContent:
+        Fn::Sub:
+          - |
+            # 更新游戏版本
+            Start-Process "C:\Program Files\VRisingServer\steam\steamcmd.exe" -ArgumentList "+login anonymous +app_update 1829350 validate +quit" -Wait
+
+            # 改变当前工作目录
+            Set-Location -Path "C:\Program Files\VRisingServer\steam\steamapps\common\VRisingDedicatedServer"
+
+            # 启动游戏
+            Start-Process ".\VRisingServer.exe" -ArgumentList "-persistentDataPath .\save-data -serverName '${ServerName}' -saveName World1 -logFile .\logs\VRisingServer.log" -WindowStyle Hidden
+
+          - ServerName:
+              Ref: ServerName
+
+Outputs:
+  windowsEndpoint:
+    Label:
+      zh-cn: 夜族崛起服务器地址端口
+      en: Service Addresses
+    Value:
+      Fn::Sub:
+        - ${ServerAddress}:9876
+        - ServerAddress:
+            Fn::Select:
+              - 0
+              - Fn::GetAtt:
+                  - WindowsEcsInstanceGroup
+                  - PublicIps
+  document:
+    Label:
+      zh-cn: 操作说明
+      en: operation detail
+    Value: 登录您的Steam账号后打开夜族崛起游戏并点击开始，输入该服务器地址和端口即可畅快开玩～
+Metadata:
+  ALIYUN::ROS::Interface:
+    Hidden:
+      - Difficulty
+    ParameterGroups:
+      - Parameters:
+          - PayType
+          - PayPeriodUnit
+          - PayPeriod
+        Label:
+          default:
+            en: PayType Configuration
+            zh-cn: 付费类型配置
+      - Parameters:
+          - EcsInstanceType
+          - InternetChargeType
+          - InternetMaxBandwidthOut
+          - SystemDiskCategory
+          - SystemDiskSize
+          - InstancePassword
+        Label:
+          default:
+            zh-cn: ECS实例配置
+            en: ECS Instance Configuration
+      - Parameters:
+          - ZoneId
+        Label:
+          default:
+            zh-cn: 可用区配置
+            en: Zone Configuration
+      - Parameters:
+          - ServerName
+        Label:
+          default:
+            zh-cn: 游戏参数配置
+            en: Server Configuration
+        DefaultExpand: false
+    EstimateCostBlockedList:
+      - InstancePassword
+      - ServerName
