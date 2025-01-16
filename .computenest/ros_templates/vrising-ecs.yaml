@@ -25,6 +25,7 @@ Parameters:
       OnlyShowSelector: true
       RegionId: ${RegionId}
       Status: Running
+      DisabledStatus: true
   CreateImage:
     Type: String
     Label:
