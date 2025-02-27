@@ -34,7 +34,7 @@ ImageBuilder:
     SystemDiskSize: 40
     InstanceType: ecs.c6.large
     InternetMaxBandwidthOut: 10
-    CommandType: RunShellScript
+    CommandType: RunPowerShellScript
     Timeout: 10800
     CommandContent: |-
         # 更新游戏版本
