@@ -18,7 +18,7 @@ Service:
   ServiceInfo:
     Locale: zh-CN
     ShortDescription: docker deploy
-    Image: 'resources/icons/service_logo.png'
+    Image: 'resources/icons/service_logo.jpg'
 Artifact:
   EcsImage:
     ArtifactType: EcsImage
@@ -30,7 +30,7 @@ Artifact:
 ImageBuilder:
   EcsImage:
     RegionId: cn-hangzhou
-    SourceImageId: m-2zebyxkcr8w3sqtoww4u
+    SourceImageId: m-bp1c22sr2g8pwpr95x71
     SystemDiskSize: 40
     InstanceType: ecs.c6.large
     InternetMaxBandwidthOut: 10
