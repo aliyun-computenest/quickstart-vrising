@@ -1,0 +1,259 @@
+ROSTemplateFormatVersion: '2015-09-01'
+Description:
+  en: Deploy VRising game server
+  zh-cn: 部署夜族崛起游戏服务
+Parameters:
+  Checkbox:
+    Type: String
+    Label:
+      en: Backup Instructions
+      zh-cn: 备份说明
+    AssociationProperty: AlertCheckbox
+    AssociationPropertyMetadata:
+      Description: 使用本服务会重置ECS系统盘，使用前请确保无重要数据或已完成数据备份，以免丢失数据。
+      ConfirmText: 我已备份完成(或无需备份)
+      Alert: true
+      Type: warning
+      MustChecked: true
+  InstanceId:
+    Type: String
+    Label:
+      en: Select Running ECS Instance
+      zh-cn: 选择运行中的ECS实例
+    AssociationProperty: ALIYUN::ECS::Instance::InstanceId
+    AssociationPropertyMetadata:
+      OnlyShowSelector: true
+      RegionId: ${RegionId}
+      Status: Running
+      DisabledStatus: true
+  CreateImage:
+    Type: String
+    Label:
+      en: Whether Create Backup
+      zh-cn: 是否创建备份
+    Description:
+      zh-cn: 使用本服务将会重置ECS实例的系统盘，使用前请确保无重要数据或已经完成数据备份，避免数据丢失。选择“创建”将会自动为您备份镜像，会产生0.12元/GB/月的相关费用
+      en: Using this service will reset the system disk of the ECS instance. Before using it, please ensure that there is no important data or that you have already completed a data backup to avoid data loss. Choosing "Create" will automatically back up the image for you, which will incur a related cost.
+    Default: 'NoCreate'
+    AllowedValues:
+      - 'Create'
+      - 'NoCreate'
+    AssociationPropertyMetadata:
+      ValueLabelMapping:
+        'NoCreate': 不创建
+        'Create': 创建
+  InstancePassword:
+    Type: String
+    Label:
+      en: ECS Instance Password
+      zh-cn: 实例密码
+    Description:
+      en: Server login password, Length 8-30, must contain three(Capital letters,
+        lowercase letters, numbers, ()`~!@#$%^&*_-+=|{}[]:;'<>,.?/ Special symbol
+        in)
+      zh-cn: 服务器登录密码,长度8-30，必须包含三项（大写字母、小写字母、数字、 ()`~!@#$%^&*_-+=|{}[]:;'<>,.?/ 中的特殊符号）
+    AssociationProperty: ALIYUN::ECS::Instance::Password
+    AssociationPropertyMetadata:
+      OSType: ${OSType}
+    NoEcho: true
+  # 游戏配置
+  ServerName:
+    Type: String
+    Label:
+      en: Server Name
+      zh-cn: 服务器名称
+    Description:
+      en: ServerName
+      zh-cn: ServerName
+    Default: "My VRising Server"
+    AllowedPattern: '^[A-Za-z0-9\ ]*$'
+    ConstraintDescription:
+      zh-cn: '只允许大写字母、小写字母、数字和空格，不允许包含特殊符号'
+      en: >-
+        Only uppercase letters, lowercase letters, numbers, and Spaces are allowed, and special symbols are not allowed
+Conditions:
+  IsCreateImage:
+    Fn::Equals:
+      - Ref: CreateImage
+      - Create
+Mappings:
+  ImageId:
+    Windows:
+      "cn-beijing": "m-2zee3w0r35h8l4nlnf3z"
+      "cn-wulanchabu": "m-0jl3qhyqz8j914e2afhs"
+      "ap-south-1": "m-a2datdv07kviauk4c5bu"
+      "cn-qingdao": "m-m5ebjijgp6zb6p6xqap3"
+      "cn-wuhan-lr": "m-n4a3n5fpakgnq93eqw4c"
+      "cn-shanghai": "m-uf6gf45dq9uf9mb4qzvb"
+      "cn-hongkong": "m-j6c4y676o3k11857alsg"
+      "cn-heyuan": "m-f8za9333dz8d9dz9xs6q"
+      "eu-central-1": "m-gw8i8c0nbxgxlwxezb4k"
+      "cn-zhangjiakou": "m-8vbiecurxcp2cvg8y7x3"
+      "us-west-1": "m-rj9j6bhq5ss3lasc6cr0"
+      "cn-shenzhen": "m-wz9877d4wjwmtk3ucop7"
+      "cn-nanjing": "m-gc73n5fpakgnq93eqw4b"
+      "eu-west-1": "m-d7ob8kmvtai1na41r5j1"
+      "ap-northeast-2": "m-mj7dbinrfk09plyp7tjh"
+      "ap-northeast-1": "m-6we7u5q4jixhvf8jffis"
+      "cn-fuzhou": "m-gw05eut85fvchglop4f2"
+      "me-east-1": "m-eb36a56jmwjnr5o8hquh"
+      "cn-chengdu": "m-2vc84jrv317rb88ufv4n"
+      "cn-guangzhou": "m-7xv2w8bn5pow37qbuj3m"
+      "ap-southeast-1": "m-t4n8h0yz7xfnagg8j2x1"
+      "ap-southeast-2": "m-p0wdcnsfp7n1znxd9ae9"
+      "ap-southeast-3": "m-8psfsrwbdcul6ljp8kcs"
+      "cn-huhehaote": "m-hp31vy04txmpaowz27vo"
+      "ap-southeast-5": "m-k1aj0oh67fyhjzvduwmj"
+      "us-east-1": "m-0xie9qrjslcrq3tlmerj"
+      "ap-southeast-6": "m-5ts0hl0k429yi5odu7zs"
+      "ap-southeast-7": "m-0jofkfyrh9krbv89crpb"
+      "cn-hangzhou": "m-bp1c22sr2g8pwpr95x71"
+Resources:
+  InstanceDataSource:
+    Type: DATASOURCE::ECS::Instances
+    Properties:
+      InstanceIds:
+        - Ref: InstanceId
+  EcsSecurityGroupIngress22:
+    Type: ALIYUN::ECS::SecurityGroupIngress
+    Properties:
+      SecurityGroupId:
+        Fn::Select:
+          - 0
+          - Fn::Jq:
+              - First
+              - .[].SecurityGroupIds
+              - 'Fn::GetAtt':
+                  - InstanceDataSource
+                  - Instances
+      Priority: 1
+      SourceCidrIp: 0.0.0.0/0
+      IpProtocol: tcp
+      PortRange: '22/22'
+  EcsSecurityGroupIngress25565:
+    Type: ALIYUN::ECS::SecurityGroupIngress
+    Properties:
+      SecurityGroupId:
+        Fn::Select:
+          - 0
+          - Fn::Jq:
+              - First
+              - .[].SecurityGroupIds
+              - 'Fn::GetAtt':
+                  - InstanceDataSource
+                  - Instances
+      Priority: 1
+      SourceCidrIp: 0.0.0.0/0
+      IpProtocol: udp
+      PortRange: '9876/9876'
+  CustomImage:
+    Type: ALIYUN::ECS::CustomImage
+    Condition: IsCreateImage
+    Properties:
+      InstanceId:
+        Ref: InstanceId
+  Template:
+    Type: ALIYUN::OOS::Template
+    DependsOn:
+      - CustomImage
+    Properties:
+      TemplateName:
+        Fn::Join:
+          - '-'
+          - - template
+            - Ref: ALIYUN::StackName
+      Content: '{"FormatVersion":"OOS-2019-06-01","Description":{"en":"Upgrade Server Version","zh-cn":"升级服务端版本","name-en":"Upgrade Server Version","name-zh-cn":"升级服务端版本"},"Parameters":{"regionId":{"Type":"String","Label":{"en":"RegionId","zh-cn":"地域ID"},"AssociationProperty":"RegionId","Default":"{{ ACS::RegionId }}"},"instanceId":{"Type":"String"},"imageId":{"Type":"String"},"password":{"Type":"String"}},"Tasks":[{"Name":"getInstance","Description":{"en":"Views the ECS instances","zh-cn":"获取ECS实例"},"Action":"ACS::SelectTargets","Properties":{"ResourceType":"ALIYUN::ECS::Instance","RegionId":"{{ regionId }}","Filters":[{"Type":"ResourceIds","ResourceIds":["{{ instanceId }}"],"RegionId":"{{ regionId }}"}]},"Outputs":{"instanceId":{"Type":"String","ValueSelector":"Instances.Instance[].InstanceId"},"OSType":{"Type":"String","ValueSelector":"Instances.Instance[].OSType"}}},{"Name":"replaceSystemDisk","Action":"ACS::ECS::ReplaceSystemDisk","Description":{"en":"Replaces the system disk of ECS instances","zh-cn":"更换系统盘"},"Properties":{"regionId":"{{ regionId }}","instanceId":"{{ getInstance.instanceId }}","imageId":"{{ imageId }}","password":"{{ password }}"}},{"Name":"sleep","Action":"ACS::Sleep","Properties":{"Duration":"PT1M"}}],"Metadata":{"ALIYUN::OOS::Interface":{"ParameterGroups":[{"Parameters":["regionId","instanceId","imageId","password"],"Label":{"default":{"zh-cn":"选择实例","en":"Select Instances"}}}]}}}'
+  ReplaceSystemDisk:
+    Type: ALIYUN::OOS::Execution
+    DependsOn:
+      - Template
+    Properties:
+      SafetyCheck: Skip
+      TemplateName:
+        Fn::Join:
+          - '-'
+          - - template
+            - Ref: ALIYUN::StackName
+      Parameters:
+        regionId:
+          Ref: ALIYUN::Region
+        instanceId:
+          Ref: InstanceId
+        imageId:
+          Fn::FindInMap:
+            - ImageId
+            - Windows
+            - Ref: ALIYUN::Region
+        password:
+          Ref: InstancePassword
+  SleepBeforeRunCommand:
+    Type: ALIYUN::ROS::Sleep
+    DependsOn:
+      - ReplaceSystemDisk
+    Properties:
+      CreateDuration: 60
+  InstanceRunCommandForWindows:
+    Type: ALIYUN::ECS::RunCommand
+    DependsOn:
+      - SleepBeforeRunCommand
+    Properties:
+      Type: RunPowerShellScript
+      Sync: true
+      InstanceIds:
+        - Ref: InstanceId
+      Timeout: 1800
+      CommandContent:
+        Fn::Sub:
+          - |
+            # 更新游戏版本
+            Start-Process "C:\Program Files\VRisingServer\steam\steamcmd.exe" -ArgumentList "+login anonymous +app_update 1829350 validate +quit" -Wait
+
+            # 改变当前工作目录
+            Set-Location -Path "C:\Program Files\VRisingServer\steam\steamapps\common\VRisingDedicatedServer"
+
+            # 启动游戏
+            Start-Process ".\VRisingServer.exe" -ArgumentList "-persistentDataPath .\save-data -serverName '${ServerName}' -saveName World1 -logFile .\logs\VRisingServer.log" -WindowStyle Hidden
+
+          - ServerName:
+              Ref: ServerName
+Outputs:
+  夜族崛起Endpoint:
+    Label:
+      zh-cn: 夜族崛起服务地址
+      en: VRising Service Addresses
+    Value:
+      Fn::Sub:
+        - ${ServerAddress}:9876
+        - ServerAddress:
+            Fn::Select:
+              - 0
+              - Fn::Jq:
+                  - First
+                  - .[].PublicIpAddress
+                  - 'Fn::GetAtt':
+                      - InstanceDataSource
+                      - Instances
+  document:
+    Label:
+      zh-cn: 操作说明
+      en: operation detail
+    Value: 登录您的Stream账号后开始游戏，输入该服务器地址加入游戏即可畅玩啦～
+Metadata:
+  ALIYUN::ROS::Interface:
+    ParameterGroups:
+      - Parameters:
+          - Checkbox
+          - InstanceId
+          - CreateImage
+          - InstancePassword
+        Label:
+          default:
+            zh-cn: 配置游戏服务器
+            en: Configure Game Server
+      - Parameters:
+          - ServerName
+        Label:
+          default:
+            zh-cn: 游戏参数配置
+            en: Server Configuration
+        DefaultExpand: false

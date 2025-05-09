@@ -1,0 +1,41 @@
+Service:
+  RegionId: cn-hangzhou
+  DeployType: ros
+  DeployMetadata:
+    ServiceInstanceNameRule:
+      Prefix: vrising-
+    SupplierDeployMetadata:
+      ArtifactRelation:
+        'm-2zednt7gbkyqd1u3p4my':
+          ArtifactId: ${Artifact.EcsImage.ArtifactId}
+          ArtifactVersion: ${Artifact.EcsImage.ArtifactVersion}
+    TemplateConfigs:
+      - Name: 快速部署
+        Url: 'ros_templates/vrising.yaml'
+      - Name: 迁移到计算巢
+        Url: 'ros_templates/vrising-ecs.yaml'
+  ServiceType: private
+  ServiceInfo:
+    Locale: zh-CN
+    ShortDescription: docker deploy
+    Image: 'resources/icons/service_logo.jpg'
+Artifact:
+  EcsImage:
+    ArtifactType: EcsImage
+    ArtifactName: VRising
+    Description: VRising deploy
+    ArtifactProperty:
+      RegionId: ${ImageBuilder.EcsImage.RegionId}
+      ImageId: ${ImageBuilder.EcsImage.SourceImageId}
+ImageBuilder:
+  EcsImage:
+    RegionId: cn-hangzhou
+    SourceImageId: m-bp1c22sr2g8pwpr95x71
+    SystemDiskSize: 40
+    InstanceType: ecs.c6.large
+    InternetMaxBandwidthOut: 10
+    CommandType: RunPowerShellScript
+    Timeout: 10800
+    CommandContent: |-
+        # 更新游戏版本
+        Start-Process "C:\Program Files\VRisingServer\steam\steamcmd.exe" -ArgumentList "+login anonymous +app_update 1829350 validate +quit" -Wait
