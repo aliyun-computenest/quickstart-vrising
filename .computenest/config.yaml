@@ -17,13 +17,13 @@ Service:
   ServiceType: private
   ServiceInfo:
     - Agreements: []
-      Image: resources/icons/service_logo_zh-CN.png
+      Image: resources/icons/service_logo.jpg
       Locale: zh-CN
       Name: 夜族崛起-快速部署
       ShortDescription: 《夜族崛起》是Stunlock Studios制作发行的一款大型多人在线的动作冒险游戏，以哥特风格的开放世界展开，玩家将扮演一名刚醒来的虚弱吸血鬼，寻找血液以恢复体力，同时躲避烈日以求生存。重建城堡和吸血鬼帝国，将人类变成忠诚的仆人。2024年5月8日，《夜族崛起》1.0完整版正式上线Steam平台。
       Softwares: []
     - Agreements: []
-      Image: resources/icons/service_logo_en-US.png
+      Image: resources/icons/service_logo.jpg
       Locale: en-US
       Name: VRising-Rapid Deployment
       ShortDescription: VRising is a massively multiplayer online action-adventure game produced and released by Stunlock Studios. It is launched in a gothic-style open world. Players
