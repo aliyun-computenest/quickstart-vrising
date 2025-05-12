@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="计算巢是阿里云开放给企业应用服务商的服务管理平台。服务商能够在计算巢上发布私有化部署服务，为其客户提供云上软件一键部署的能力；同时也支持全托管模式的服务，赋能服务商托管其客户资源。">
+  <title>3分钟部署夜族崛起联机服务 - Aliyun 计算巢 x Demo</title>
+
+  <link rel="shortcut icon" href="img/favicon.ico">
+
+  <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css">
+  <link rel="stylesheet" href="css/theme.css">
+  
+
+  
+
+  
+  
+
+  
+    <script src="search/main.js"></script>
+  
+
+  
+
+  <script src="js/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="nav">
+      <div class="nav-inner">
+        <div class="logo">
+          <img src="./img/logo-2x.png">
+        </div>
+        <div class="nav-list">
+          <ul>
+          
+              <li><a href="#3">3分钟部署夜族崛起联机服务</a></li>
+              
+                  <li><a href="#_1">概述</a></li>
+                  
+              
+                  <li><a href="#_2">计费说明</a></li>
+                  
+              
+                  <li><a href="#_3">创建云服务器</a></li>
+                  
+                      <li class="li-h3"><a href="#_4">第一步：选择配置</a></li>
+                  
+                      <li class="li-h3"><a href="#_5">第二步：创建服务</a></li>
+                  
+                      <li class="li-h3"><a href="#_6">第三步：进入实例详情</a></li>
+                  
+              
+                  <li><a href="#_7">登录游戏</a></li>
+                  
+              
+          
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="content theme-github">
+      
+      <div class="content-inner">        
+        
+        <h1 id="3">3分钟部署夜族崛起联机服务</h1>
+<h2 id="_1">概述</h2>
+<p>《夜族崛起》是Stunlock Studios制作发行的一款大型多人在线的动作冒险游戏，以哥特风格的开放世界展开，玩家将扮演一名刚醒来的虚弱吸血鬼，寻找血液以恢复体力，同时躲避烈日以求生存。重建城堡和吸血鬼帝国，将人类变成忠诚的仆人。2024年5月8日，《夜族崛起》1.0完整版正式上线Steam平台。</p>
+<h2 id="_2">计费说明</h2>
+<p>夜族崛起联机服务在计算巢上的费用主要涉及：所选vCPU与内存规格、磁盘容量、公网带宽
+计费方式包括：包年包月、按量付费（小时）
+预估费用在创建实例时可实时看到。</p>
+<h2 id="_3">创建云服务器</h2>
+<h3 id="_4">第一步：选择配置</h3>
+<ol>
+<li>服务实例名称（如无特殊要求，保持默认即可）；</li>
+<li>选择部署地域（可以选择离自己最近的城市，如无特殊要求，保持默认即可）；</li>
+<li>选择配置:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>套餐名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>推荐1到4个玩家游玩</td>
+<td>4核16G，10M带宽不限流量</td>
+</tr>
+<tr>
+<td>推荐3到4个玩家游玩</td>
+<td>8核32G，10M带宽不限流量</td>
+</tr>
+<tr>
+<td>自定义套餐</td>
+<td>可自由选择ECS配置（所选规格的内存至少16G），适合高阶DIY玩家</td>
+</tr>
+<tr>
+<td><img alt="1.jpg" src="1.jpg" /></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>配置服务器密码和 可用区（如无特殊要求，保持默认即可）。</li>
+<li>配置游戏参数，配置完成之后，点击下一步，确认提交订单。
+   <img alt="1.jpg" src="2.jpg" /></li>
+</ol>
+<h3 id="_5">第二步：创建服务</h3>
+<ol>
+<li>在服务确认页面，勾选同意服务条款，点击“立即创建”，后面就是付款流程。</li>
+<li>当出现提交成功提示，说明服务已经开始创建，点击“去列表查看”，可以看到服务正在部署中。
+   <img alt="1.jpg" src="3.jpg" /></li>
+</ol>
+<h3 id="_6">第三步：进入实例详情</h3>
+<ol>
+<li>服务不到1分钟即可完成创建，当服务的状态变成“已部署”，点击服务实例ID进入服务详情。
+   <img alt="1.jpg" src="4.jpg" /></li>
+<li>到这一步的时候，夜族崛起的服务端安装程序已经预置在服务的镜像里了，无需手动复制，非常方便。</li>
+<li>看到“夜族崛起服务器地址端口”，这就是你搭建服务器的IP地址了，复制这个地址用于下一步操作。
+   <img alt="1.jpg" src="5.jpg" /></li>
+</ol>
+<h2 id="_7">登录游戏</h2>
+<p>前置条件：已经在steam平台购买并安装夜族崛起。</p>
+<ol>
+<li>
+<p>登录您的steam账号并开始游戏。
+   <img alt="1.jpg" src="6.jpg" /></p>
+</li>
+<li>
+<p>进入游戏后点击开始游戏。
+   <img alt="1.jpg" src="7.jpg" /></p>
+</li>
+<li>
+<p>选择线上游戏。
+   <img alt="1.jpg" src="8.jpg" /></p>
+</li>
+<li>
+<p>显示所有服务器。
+   <img alt="1.jpg" src="9.jpg" /></p>
+</li>
+<li>
+<p>直接连接服务器。
+   <img alt="1.jpg" src="10.jpg" /></p>
+</li>
+<li>
+<p>粘贴上文生成的服务器地址端口并连接。
+   <img alt="1.jpg" src="11.jpg" /></p>
+</li>
+<li>
+<p>等待游戏加载完成即可畅玩啦。
+   <img alt="1.jpg" src="12.jpg" /></p>
+</li>
+</ol>
+        
+      </div>
+
+      <div class="copyrights">© 2009-2022 Aliyun.com 版权所有</div>
+    </div>
+  </div>
+  
+  <!--
+  MkDocs version      : 1.6.1
+  Docs Build Date UTC : 2025-05-12 09:40:22.153927+00:00
+  -->
+</body>
+</html>
